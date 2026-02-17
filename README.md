@@ -20,24 +20,24 @@ It is designed for learning and academic purposes.
 
 ---
 
-### Task 1 – Stack Pointer Analysis
+## Task 1 – Stack Pointer Analysis
 
-## Goal: Demonstrate Method Call Stack Behavior
+### Goal: Demonstrate Method Call Stack Behavior
 - Create multiple nested method calls (e.g., deposit → validate → updateBalance).
 - Show how each method call creates a stack frame (tracing call stack).
 - Cause a StackOverflowError by creating excessive recursive calls (discussion).
 - Document what happens when methods complete (stack unwinding) (explaining).
 
-### Task 2 – Heap Allocation
-## Goal: Demonstrate Object Creation in the Heap
+## Task 2 – Heap Allocation
+### Goal: Demonstrate Object Creation in the Heap
 
 - Create multiple BankAccount objects with different initial balances.
 - Show how each object is allocated in the Heap (tracing call heap).
 - Demonstrate what happens when references are reassigned (discussion).
 - Trigger garbage collection scenario by nullifying references (explaining).
 
-### Task 3 – Reference vs Primitive
-## Goal: Demonstrate Parameter Passing Differences
+## Task 3 – Reference vs Primitive
+### Goal: Demonstrate Parameter Passing Differences
 
 - Show primitive types (e.g., balance as double) vs object references.
 - Create methods that modify parameters.
@@ -45,13 +45,13 @@ It is designed for learning and academic purposes.
 - Compare with passing primitive values (discussion).
 - Show String immutability in banking operations (demonstration and discussion).
 
-### ⚙ Additional Tasks
+## ⚙ Additional Tasks
 
-## 1. Scheduling Concepts
+### 1. Scheduling Concepts
 
-## 2. Concurrency Concepts
+### 2. Concurrency Concepts
 
-### ▶ How to Run
+## ▶ How to Run
 ```bash
 javac BankAccount.java TestBank.java
 java TestBank
