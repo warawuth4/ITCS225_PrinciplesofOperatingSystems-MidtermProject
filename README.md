@@ -2,8 +2,6 @@
 
 A small Java project demonstrating core Object-Oriented Programming (OOP) principles and memory behavior concepts using a `BankAccount` class and a `TestBank` driver class.
 
----
-
 ## 📌 Overview
 
 This project demonstrates:
@@ -17,8 +15,6 @@ This project demonstrates:
 - String vs StringBuilder differences
 
 It is designed for learning and academic purposes.
-
----
 
 ## Task 1 – Stack Pointer Analysis
 
@@ -45,15 +41,11 @@ It is designed for learning and academic purposes.
 - Compare with passing primitive values (discussion).
 - Show String immutability in banking operations (demonstration and discussion).
 
----
-
 ## ⚙ Additional Tasks
 
 #### 1. Scheduling Concepts
 
 #### 2. Concurrency Concepts
-
----
 
 ## ▶ How to Run
 ```bash
