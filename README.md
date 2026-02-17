@@ -47,9 +47,9 @@ It is designed for learning and academic purposes.
 
 ## ⚙ Additional Tasks
 
-### 1. Scheduling Concepts
+#### 1. Scheduling Concepts
 
-### 2. Concurrency Concepts
+#### 2. Concurrency Concepts
 
 ## ▶ How to Run
 ```bash
