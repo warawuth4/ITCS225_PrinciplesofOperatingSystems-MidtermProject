@@ -45,11 +45,15 @@ It is designed for learning and academic purposes.
 - Compare with passing primitive values (discussion).
 - Show String immutability in banking operations (demonstration and discussion).
 
+---
+
 ## ⚙ Additional Tasks
 
 #### 1. Scheduling Concepts
 
 #### 2. Concurrency Concepts
+
+---
 
 ## ▶ How to Run
 ```bash
