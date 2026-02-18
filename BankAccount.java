@@ -1,20 +1,14 @@
-public class BankAccount extends Account implements Transaction {
+abstract public class BankAccount implements Transaction {
 
     private float balance;
     private String name;
     private final int MAX_WITHDRAW = 10000;
 
-    public BankAccount(float balance, String name) {
-        super();
-        this.balance = balance;
-        this.name = name;
-    }
-
-    public BankAccount(float balance, String name, String type, double interest) {
-        super(name, type, interest);
-        this.balance = balance;
-        this.name = name;
-    }
+	public BankAccount(float balance, String name)
+	{
+		this.balance = balance;
+		this.name = name;
+	}
 
     public float getBalance() {
         return balance;
@@ -24,26 +18,37 @@ public class BankAccount extends Account implements Transaction {
         return name;
     }
 
-    public boolean validate(float amount, String type) {
-        if (type.equalsIgnoreCase("withdraw")) {
+    public boolean validate(float amount, String type) 
+    {
+
+        if (type.equalsIgnoreCase("withdraw")) 
+        {
             // Check if the amount is less than balance
-            if (amount > this.balance) {
+            if (amount > this.balance) 
+            {
                 System.out.println("Invalid amount: Bigger than current balance");
                 return false;
             }
+
             // Check if the amount is negative
-            else if (amount < 0) {
+            else if (amount < 0) 
+            {
                 System.out.println("Invalid amount: Negative amount");
                 return false;
             }
+
             // Check if the amount is outrageously large
-            else if (amount >= MAX_WITHDRAW) {
+            else if (amount >= MAX_WITHDRAW) 
+            {
                 System.out.println("Invalid amount: Too large");
                 return false;
             }
             return true;
-        } else if (type.equalsIgnoreCase("deposit")) {
-            if (amount <= 0) {
+        } 
+        else if (type.equalsIgnoreCase("deposit")) 
+        {
+            if (amount <= 0) 
+            {
                 System.out.println("Invalid amount: Negative amount");
                 return false;
             } else {
@@ -54,37 +59,46 @@ public class BankAccount extends Account implements Transaction {
         return false;
     }
 
-    public boolean updateBalance(float amount) {
+    public boolean updateBalance(float amount) 
+    {
         this.balance += amount;
         return true;
     }
 
-    public boolean withdraw(float amount) {
+    public boolean withdraw(float amount) 
+    {
         // Validate if the withdrawal amount is valid
-        if (validate(amount, "withdraw")) {
+        if (validate(amount, "withdraw")) 
+        {
             // Update the balance by minus
             updateBalance(-amount);
 
             // Return withdraw success
             System.out.println(this.name + " has successfully withdrawed: Current balance = " + this.balance);
             return true;
-        } else {
+        } 
+        else 
+        {
             // Return withdraw failed
             System.out.println("Withdraw failed");
             return false;
         }
     }
 
-    public boolean deposit(float amount) {
+    public boolean deposit(float amount) 
+    {
         // Validate if the deposit amount is valid
-        if (validate(amount, "deposit")) {
+        if (validate(amount, "deposit")) 
+        {
             // Update the balance by increment
             updateBalance(amount);
 
             // Return withdraw success
             System.out.println(this.name + " has successfully deposited: Current balance = " + this.balance);
             return true;
-        } else {
+        } 
+        else 
+        {
             // Return deposit failed
             System.out.println("Deposit failed");
             return false;
@@ -92,8 +106,14 @@ public class BankAccount extends Account implements Transaction {
     }
 
     @Override
-    public String toString() {
-        return "BankAccount of " + name + ": balance = " + balance;
+    public String toString() 
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BankAccount of ")
+            .append(name)
+            .append(": balance = ")
+            .append(balance);
+        return sb.toString();
     }
 }
 
