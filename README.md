@@ -49,6 +49,6 @@ It is designed for learning and academic purposes.
 
 ## ▶ How to Run
 ```bash
-javac BankAccount.java TestBank.java
+javac *.java
 java TestBank
 ```
