@@ -4,26 +4,26 @@ public class SavingsAccount extends BankAccount {
 
     public SavingsAccount(float balance, String name) 
     {
-        super(balance, amount);
+        super(balance, name);
         this.interestRate = 0.02f; // Default interest rate
     }
 
     public SavingsAccount(float balance, String name, float interestRate) 
     {
-        super(balance, amount);
+        super(balance, name);
         this.interestRate = interestRate;
     }
 
     public double getInterestRate() 
     {
-        return interestRate;
+        return this.interestRate;
     }
 
     public boolean addInterest() {
-        if ( 0 <= interestRate <= 1)
+        if (this.interestRate >= 0 && this.interestRate <= 1)
         {
             // Add interest rate to balance
-            balance += balance * interestRate();
+            super.updateBalance(super.getBalance() * this.interestRate);
 
             // Return add interest successful
             return true;

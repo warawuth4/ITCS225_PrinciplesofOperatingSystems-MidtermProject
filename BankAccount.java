@@ -1,4 +1,4 @@
-abstract public class BankAccount implements Transaction {
+abstract public class BankAccount implements Transferable {
 
     private float balance;
     private String name;
@@ -65,7 +65,7 @@ abstract public class BankAccount implements Transaction {
         return true;
     }
 
-    public boolean withdraw(float amount) 
+    public synchronized boolean withdraw(float amount) 
     {
         // Validate if the withdrawal amount is valid
         if (validate(amount, "withdraw")) 
@@ -85,7 +85,7 @@ abstract public class BankAccount implements Transaction {
         }
     }
 
-    public boolean deposit(float amount) 
+    public synchronized boolean deposit(float amount) 
     {
         // Validate if the deposit amount is valid
         if (validate(amount, "deposit")) 
@@ -103,6 +103,28 @@ abstract public class BankAccount implements Transaction {
             System.out.println("Deposit failed");
             return false;
         }
+    }
+    
+    @Override
+    public synchronized boolean transfer(BankAccount destination, float amount) {
+    	
+    	synchronized (this) {
+	        // Validate inputs
+	        if (destination == null || amount <= 0) {
+	            return false;
+	        }
+	
+	        // Attempt to withdraw from this account
+	        if (this.withdraw(amount)) {
+	        	
+	            // Deposit into destination account
+	            destination.deposit(amount);
+	            return true;
+	        }
+	
+	        // Withdrawal failed
+	        return false;
+    	}
     }
 
     @Override

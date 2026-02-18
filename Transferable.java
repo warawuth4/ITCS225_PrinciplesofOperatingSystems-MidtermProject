@@ -1,4 +1,4 @@
-public interface Transaction {
+public interface Transferable {
 
     boolean deposit(float amount);
     boolean withdraw(float amount);
