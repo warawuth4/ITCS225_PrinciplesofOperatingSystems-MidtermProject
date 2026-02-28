@@ -4,21 +4,25 @@ abstract public class BankAccount implements Transferable {
     private String name;
     private final int MAX_WITHDRAW = 10000;
 
+    // Constructor with initial balance and account name
 	public BankAccount(float balance, String name)
 	{
 		this.balance = balance;
 		this.name = name;
 	}
 
+    // Returns the current balance
     public float getBalance() {
         return balance;
     }
 
+    // Returns the name of the account
     public String getName() {
         return name;
     }
 
-    public boolean validate(float amount, String type) 
+    // Validates both deposit and withdraw
+    public boolean validate(float amount, String type)
     {
 
         if (type.equalsIgnoreCase("withdraw")) 
@@ -59,12 +63,17 @@ abstract public class BankAccount implements Transferable {
         return false;
     }
 
+    // Increases the current balance by amount
     public boolean updateBalance(float amount) 
     {
         this.balance += amount;
         return true;
     }
 
+    // Withdraw from current balance by amount
+    // Only one thread may use this method at a time (synchronized)
+    // Implements withdraw() from Transferable interface
+    @Override
     public synchronized boolean withdraw(float amount) 
     {
         // Validate if the withdrawal amount is valid
@@ -74,17 +83,21 @@ abstract public class BankAccount implements Transferable {
             updateBalance(-amount);
 
             // Return withdraw success
-            System.out.println(this.name + " has successfully withdrawed: Current balance = " + this.balance);
+            System.out.println(this.name + " has successfully withdrawn: Current balance = " + this.balance);
             return true;
         } 
         else 
         {
             // Return withdraw failed
-            System.out.println("Withdraw failed");
+            System.out.println("Withdrawal failed");
             return false;
         }
     }
 
+    // Deposit in current balance by amount
+    // Only one thread may use this method at a time (synchronized)
+    // Implements deposit() from Transferable interface
+    @Override
     public synchronized boolean deposit(float amount) 
     {
         // Validate if the deposit amount is valid
@@ -104,7 +117,10 @@ abstract public class BankAccount implements Transferable {
             return false;
         }
     }
-    
+
+    // Place a Transfer amount to destination BankAccount
+    // Only one thread may use this method at a time (synchronized)
+    // Implements transfer() from Transferable interface
     @Override
     public synchronized boolean transfer(BankAccount destination, float amount) {
     	
@@ -127,9 +143,11 @@ abstract public class BankAccount implements Transferable {
     	}
     }
 
+    // Override toString() to provide custom useful information on printing BankAccount directly
     @Override
     public String toString() 
     {
+        // Using StringBuilder optimizes performance
         StringBuilder sb = new StringBuilder();
         sb.append("BankAccount of ")
             .append(name)

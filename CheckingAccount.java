@@ -1,22 +1,27 @@
+// This is a child of BankAccount (inheritance)
 public class CheckingAccount extends BankAccount {
 
     private float currentOverdraft;
     private final float MAX_OVERDRAFT = 500.0f; // Over draft limit
 
+    // Constructor with zero overdraft
     public CheckingAccount(float balance, String name) {
         super(balance, name);
-        this.currentOverdraft = 0.0f;
+        this.currentOverdraft = 0.0f; //
     }
+
+    // Constructor with current balance, account name, and initial overdraft amount
     public CheckingAccount(float balance, String name, float currentOverdraft) {
         super(balance, name);
         this.currentOverdraft = currentOverdraft;
     }
 
+    // Return current balance + available overdraft amount
     public double getAvailableFunds() {
         return super.getBalance() + (MAX_OVERDRAFT - currentOverdraft);
     }
 
-    // Override withdraw for overdraft amount
+    // Override withdraw that takes into account overdraft
     @Override
     public synchronized boolean withdraw(float amount) {
 
@@ -27,7 +32,7 @@ public class CheckingAccount extends BankAccount {
             return false;
         }
 
-    // Get the total funds available for withdrawal, including overdraft
+        // Get the total funds available for withdrawal, including overdraft
 	    double available = getAvailableFunds();
 	
 	    // Check if the requested amount exceeds the available funds
