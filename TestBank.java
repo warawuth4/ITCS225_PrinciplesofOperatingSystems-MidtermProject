@@ -31,8 +31,9 @@ public class TestBank {
 
         // Test primitive type
         int Primitive = 1000;
+        System.out.println("Initial primitive value: " + Primitive);
         testPrimitive(Primitive);
-        System.out.println("Primitive value (real): " + Primitive);
+        System.out.println("Primitive value (original): " + Primitive);
 
         // StringBuilder explained
         String string1 = "Bob";
