@@ -16,6 +16,10 @@ This project demonstrates:
 
 It is designed for learning and academic purposes.
 
+## System Design
+
+![System Design](umlclassdiagram.png)
+
 ## Task 1 – Stack Pointer Analysis
 
 ### Goal: Demonstrate Method Call Stack Behavior
