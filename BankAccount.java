@@ -77,7 +77,7 @@ abstract public class BankAccount implements Transferable {
     }
 
     // Withdraw from current balance by amount
-    // Only one thread may use this method at a time (synchronized)
+    // Only one thread may use this method at a time
     // Implements withdraw() from Transferable interface
     @Override
     public boolean withdraw(float amount) 
@@ -130,7 +130,7 @@ abstract public class BankAccount implements Transferable {
     }
 
     // Deposit in current balance by amount
-    // Only one thread may use this method at a time (synchronized)
+    // Only one thread may use this method at a time
     // Implements deposit() from Transferable interface
     @Override
     public boolean deposit(float amount) 
@@ -178,7 +178,7 @@ abstract public class BankAccount implements Transferable {
     }
 
     // Place a Transfer amount to destination BankAccount
-    // Only one thread may use this method at a time (synchronized)
+    // Only one thread may use this method at a time
     // Implements transfer() from Transferable interface
     @Override
     public boolean transfer(BankAccount destination, float amount) {
