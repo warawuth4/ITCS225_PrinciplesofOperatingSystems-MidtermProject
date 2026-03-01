@@ -1,8 +1,14 @@
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
+
 abstract public class BankAccount implements Transferable {
 
     private float balance;
     private String name;
     private final int MAX_WITHDRAW = 10000;
+
+    // ReentrantLock to prevent race condition
+    protected final ReentrantLock lock = new ReentrantLock(true);
 
     // Constructor with initial balance and account name
 	public BankAccount(float balance, String name)
@@ -74,22 +80,51 @@ abstract public class BankAccount implements Transferable {
     // Only one thread may use this method at a time (synchronized)
     // Implements withdraw() from Transferable interface
     @Override
-    public synchronized boolean withdraw(float amount) 
+    public boolean withdraw(float amount) 
     {
-        // Validate if the withdrawal amount is valid
-        if (validate(amount, "withdraw")) 
+        try 
         {
-            // Update the balance by minus
-            updateBalance(-amount);
 
-            // Return withdraw success
-            System.out.println(this.name + " has successfully withdrawn: Current balance = " + this.balance);
-            return true;
+            // Timeout to prevent deadlocks
+            if (lock.tryLock(2, TimeUnit.SECONDS)) 
+            {
+                try 
+                {
+
+                    // Validate if the withdrawal amount is valid
+                    if (validate(amount, "withdraw")) 
+                    {
+                        // Update the balance by minus
+                        updateBalance(-amount);
+
+                        // Return withdraw success
+                        System.out.println(this.name + " has successfully withdrawn: Current balance = " + this.balance);
+                        return true;
+                    } 
+                    else 
+                    {
+                        // Return withdraw failed
+                        System.out.println("Withdrawal failed");
+                        return false;
+                    }
+
+                } 
+                finally 
+                {
+                    lock.unlock();
+                }
+
+            // Lock failed
+            } 
+            else 
+            {
+                System.out.println("Withdraw timeout: Could not acquire lock");
+                return false;
+            }
         } 
-        else 
+        catch (InterruptedException e) 
         {
-            // Return withdraw failed
-            System.out.println("Withdrawal failed");
+            Thread.currentThread().interrupt();
             return false;
         }
     }
@@ -98,22 +133,46 @@ abstract public class BankAccount implements Transferable {
     // Only one thread may use this method at a time (synchronized)
     // Implements deposit() from Transferable interface
     @Override
-    public synchronized boolean deposit(float amount) 
+    public boolean deposit(float amount) 
     {
-        // Validate if the deposit amount is valid
-        if (validate(amount, "deposit")) 
+        try 
         {
-            // Update the balance by increment
-            updateBalance(amount);
 
-            // Return withdraw success
-            System.out.println(this.name + " has successfully deposited: Current balance = " + this.balance);
-            return true;
+            // Timeout to prevent deadlocks
+            if (lock.tryLock(2, TimeUnit.SECONDS)) 
+            {
+                try 
+                {
+
+                    // Validate if the deposit amount is valid
+                    if (validate(amount, "deposit")) 
+                    {
+                        // Update the balance by increment
+                        updateBalance(amount);
+
+                        // Return withdraw success
+                        System.out.println(this.name + " has successfully deposited: Current balance = " + this.balance);
+                        return true;
+                    } 
+                    else 
+                    {
+                        // Return deposit failed
+                        System.out.println("Deposit failed");
+                        return false;
+                    }
+
+                } finally {
+                    lock.unlock();
+                }
+
+            // Lock failed
+            } else {
+                System.out.println("Deposit timeout: Could not acquire lock");
+                return false;
+            }
         } 
-        else 
-        {
-            // Return deposit failed
-            System.out.println("Deposit failed");
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return false;
         }
     }
@@ -122,25 +181,69 @@ abstract public class BankAccount implements Transferable {
     // Only one thread may use this method at a time (synchronized)
     // Implements transfer() from Transferable interface
     @Override
-    public synchronized boolean transfer(BankAccount destination, float amount) {
-    	
-    	synchronized (this) {
-	        // Validate inputs
-	        if (destination == null || amount <= 0) {
-	            return false;
-	        }
-	
-	        // Attempt to withdraw from this account
-	        if (this.withdraw(amount)) {
-	        	
-	            // Deposit into destination account
-	            destination.deposit(amount);
-	            return true;
-	        }
-	
-	        // Withdrawal failed
-	        return false;
-    	}
+    public boolean transfer(BankAccount destination, float amount) {
+
+        // Validate inputs
+        if (destination == null || amount <= 0) {
+            return false;
+        }
+
+        // Deadlock prevention: lock ordering
+        BankAccount first = this.hashCode() < destination.hashCode() ? this : destination;
+        BankAccount second = this.hashCode() < destination.hashCode() ? destination : this;
+
+        try 
+        {
+
+            // Timeout to prevent first deadlocks
+            if (first.lock.tryLock(2, TimeUnit.SECONDS)) 
+            {
+                try 
+                {
+
+                    // Timeout to prevent second deadlocks
+                    if (second.lock.tryLock(2, TimeUnit.SECONDS)) 
+                    {
+                        try 
+                        {
+
+                            // Attempt to withdraw from this account
+                            if (this.validate(amount, "withdraw")) 
+                            {
+
+                                // Update balances atomically
+                                this.updateBalance(-amount);
+                                destination.updateBalance(amount);
+
+                                return true;
+                            }
+
+                            // Withdrawal failed
+                            return false;
+
+                        } 
+                        finally 
+                        {
+                            second.lock.unlock();
+                        }
+                    }
+                } 
+                finally 
+                {
+                    first.lock.unlock();
+                }
+            }
+
+            // Lock failed
+            System.out.println("Transfer timeout: Could not acquire locks");
+            return false;
+
+        } 
+        catch (InterruptedException e) 
+        {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     // Override toString() to provide custom useful information on printing BankAccount directly
@@ -156,4 +259,3 @@ abstract public class BankAccount implements Transferable {
         return sb.toString();
     }
 }
-

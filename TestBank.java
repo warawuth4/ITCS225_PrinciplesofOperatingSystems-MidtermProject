@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 public class TestBank {
     public static void main(String[] args) throws InterruptedException {
@@ -16,7 +17,7 @@ public class TestBank {
         System.out.println("Task 2: Heap allocator");
         BankAccount Obj1 = new SavingsAccount(1000, "Jane");
         System.out.println(Obj1);
-        BankAccount Obj2 = new SavingsAccount(1000, "John");
+        BankAccount Obj2 = new SavingsAccount(1100, "John");
         System.out.println(Obj2);
         Obj1 = new SavingsAccount(0, "Jane new");
         Obj2 = null;
@@ -72,21 +73,26 @@ public class TestBank {
         System.out.println("Primitive value (copy): " + number);
     }
     
-    public static void testConcurrency(BankAccount acc1, BankAccount acc2) throws InterruptedException {
+    public static void testConcurrency(BankAccount acc1, BankAccount acc2) 
+            throws InterruptedException {
 
-    	System.out.println("=== Concurrency Test ===");
-    	
-        Thread t1 = new Thread(new TransferTask(acc1, acc2, 200f), "T1");
-        Thread t2 = new Thread(new TransferTask(acc2, acc1, 150f), "T2");
+        System.out.println("=== Concurrency Test ===");
 
-        // Start both threads concurrently
+        // Only allows 2 threads at a time
+        Semaphore semaphore = new Semaphore(2); 
+
+        Thread t1 = new Thread(new TransferTask(acc1, acc2, 200f, semaphore), "T1");
+        Thread t2 = new Thread(new TransferTask(acc2, acc1, 150f, semaphore), "T2");
+
+
+        // Start both threads
         t1.start();
         t2.start();
 
-        // Wait for completion
+        // Wait for both threads to finish
         t1.join();
         t2.join();
-        
+
         System.out.println("=== Concurrency Test Finished ===");
     }
     
@@ -110,9 +116,13 @@ public class TestBank {
         highPriority.start();
         lowPriority.start();
 
-        // Wait for completion
+        // Wait for both threads to finish
         highPriority.join();
         lowPriority.join();
+
+        // NOTE: Thread priority is only a scheduling hint.
+        // The JVM/OS may ignore it.
+        // Execution order is NOT guaranteed.
 
         System.out.println("=== Priority Scheduling Test Finished ===");
     }

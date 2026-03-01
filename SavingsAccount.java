@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit;
+
 // This is a child of BankAccount (inheritance)
 public class SavingsAccount extends BankAccount {
 
@@ -25,20 +27,47 @@ public class SavingsAccount extends BankAccount {
 
     // Add the interest earned to current balance
     public boolean addInterest() {
-        if (this.interestRate >= 0 && this.interestRate <= 1)
+        try 
         {
-            // Add interest rate to balance
-            super.updateBalance(super.getBalance() * this.interestRate);
+            // Timeout to prevent deadlocks
+            if (lock.tryLock(2, TimeUnit.SECONDS)) 
+            {
+                try 
+                {
 
-            // Return add interest successful
-            return true;
-        }
-        else
+                    if (this.interestRate >= 0 && this.interestRate <= 1)
+                    {
+                        // Add interest rate to balance
+                        super.updateBalance(super.getBalance() * this.interestRate);
+
+                        // Return add interest successful
+                        return true;
+                    }
+                    else
+                    {
+                        // Return add interest failed
+                        System.out.println("Invalid interest: Invalid range");
+                        return false;
+                    }
+
+                } 
+                finally 
+                {
+                    lock.unlock();
+                }
+            } 
+            // Lock failed
+            else 
+            {
+                System.out.println("Interest timeout: Could not acquire lock");
+                return false;
+            }
+
+        } 
+        catch (InterruptedException e) 
         {
-            // Return add interest failed
-            System.out.println("Invalid interest: Invalid range");
+            Thread.currentThread().interrupt();
             return false;
         }
-        
     }
 }
