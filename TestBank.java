@@ -96,16 +96,22 @@ public class TestBank {
         System.out.println("=== Concurrency Test Finished ===");
     }
     
-    public static void testPriorityScheduling(BankAccount acc1, BankAccount acc2) throws InterruptedException {
+    public static void testPriorityScheduling(BankAccount acc1, BankAccount acc2) 
+            throws InterruptedException {
 
         System.out.println("=== Priority Scheduling Test ===");
 
+        // Only allows 2 threads at a time
+        Semaphore semaphore = new Semaphore(2); 
+
         Thread highPriority = new Thread(
-                new TransferTask(acc1, acc2, 300f)
+                new TransferTask(acc1, acc2, 300f, semaphore), 
+                "highPriority"
         );
 
         Thread lowPriority = new Thread(
-                new TransferTask(acc2, acc1, 100f)
+                new TransferTask(acc2, acc1, 100f, semaphore),
+                "lowPriority"
         );
 
         // Apply priority scheduling
