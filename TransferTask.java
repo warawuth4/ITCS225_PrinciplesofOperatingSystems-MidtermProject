@@ -25,13 +25,11 @@ public class TransferTask implements Runnable {
 
     @Override
     public void run() {
-        try 
-        {
+        try {
             // Acquire a permit before executing transfer
             // If no permit is available, the thread will BLOCK here
             // This limits how many transfers run concurrently
-            if (semaphore != null) 
-            {
+            if (semaphore != null) {
                 semaphore.acquire();
             }
 
@@ -41,17 +39,12 @@ public class TransferTask implements Runnable {
 
             System.out.println(Thread.currentThread().getName() + " transfer " + (success ? "SUCCESS" : "FAILED"));
 
-        } 
-        catch (InterruptedException e) 
-        {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } 
-        finally 
-        {
+        } finally {
             // Always release permit after execution
             // This allows another waiting thread to proceed
-            if (semaphore != null) 
-            {
+            if (semaphore != null) {
                 semaphore.release();
             }
         }

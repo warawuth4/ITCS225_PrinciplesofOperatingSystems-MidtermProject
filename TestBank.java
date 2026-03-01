@@ -45,15 +45,15 @@ public class TestBank {
         string2.append(" VIP"); // Append in-place - only one final string is created
         System.out.println(string2);
         System.out.println();
-     
+
         // TODO Additional: Scheduling Method: Priority Scheduling
         testPriorityScheduling(Customer1, Customer2);
         System.out.println();
 
-        
+
         // TODO Additional: Concurrency
         testConcurrency(Customer1, Customer2);
-       
+
 
     }
 
@@ -72,14 +72,13 @@ public class TestBank {
         number -= 1676;
         System.out.println("Primitive value (copy): " + number);
     }
-    
-    public static void testConcurrency(BankAccount acc1, BankAccount acc2) 
-            throws InterruptedException {
+
+    public static void testConcurrency(BankAccount acc1, BankAccount acc2) throws InterruptedException {
 
         System.out.println("=== Concurrency Test ===");
 
         // Only allows 2 threads at a time
-        Semaphore semaphore = new Semaphore(2); 
+        Semaphore semaphore = new Semaphore(2);
 
         Thread t1 = new Thread(new TransferTask(acc1, acc2, 200f, semaphore), "T1");
         Thread t2 = new Thread(new TransferTask(acc2, acc1, 150f, semaphore), "T2");
@@ -95,24 +94,17 @@ public class TestBank {
 
         System.out.println("=== Concurrency Test Finished ===");
     }
-    
-    public static void testPriorityScheduling(BankAccount acc1, BankAccount acc2) 
-            throws InterruptedException {
+
+    public static void testPriorityScheduling(BankAccount acc1, BankAccount acc2) throws InterruptedException {
 
         System.out.println("=== Priority Scheduling Test ===");
 
         // Only allows 2 threads at a time
-        Semaphore semaphore = new Semaphore(2); 
+        Semaphore semaphore = new Semaphore(2);
 
-        Thread highPriority = new Thread(
-                new TransferTask(acc1, acc2, 300f, semaphore), 
-                "highPriority"
-        );
+        Thread highPriority = new Thread(new TransferTask(acc1, acc2, 300f, semaphore), "highPriority");
 
-        Thread lowPriority = new Thread(
-                new TransferTask(acc2, acc1, 100f, semaphore),
-                "lowPriority"
-        );
+        Thread lowPriority = new Thread(new TransferTask(acc2, acc1, 100f, semaphore), "lowPriority");
 
         // Apply priority scheduling
         highPriority.setPriority(Thread.MAX_PRIORITY);

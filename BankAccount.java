@@ -11,11 +11,10 @@ abstract public class BankAccount implements Transferable {
     protected final ReentrantLock lock = new ReentrantLock(true);
 
     // Constructor with initial balance and account name
-	public BankAccount(float balance, String name)
-	{
-		this.balance = balance;
-		this.name = name;
-	}
+    public BankAccount(float balance, String name) {
+        this.balance = balance;
+        this.name = name;
+    }
 
     // Returns the current balance
     public float getBalance() {
@@ -28,37 +27,29 @@ abstract public class BankAccount implements Transferable {
     }
 
     // Validates both deposit and withdraw
-    public boolean validate(float amount, String type)
-    {
+    public boolean validate(float amount, String type) {
 
-        if (type.equalsIgnoreCase("withdraw")) 
-        {
+        if (type.equalsIgnoreCase("withdraw")) {
             // Check if the amount is less than balance
-            if (amount > this.balance) 
-            {
+            if (amount > this.balance) {
                 System.out.println("Invalid amount: Bigger than current balance");
                 return false;
             }
 
             // Check if the amount is negative
-            else if (amount < 0) 
-            {
+            else if (amount < 0) {
                 System.out.println("Invalid amount: Negative amount");
                 return false;
             }
 
             // Check if the amount is outrageously large
-            else if (amount >= MAX_WITHDRAW) 
-            {
+            else if (amount >= MAX_WITHDRAW) {
                 System.out.println("Invalid amount: Too large");
                 return false;
             }
             return true;
-        } 
-        else if (type.equalsIgnoreCase("deposit")) 
-        {
-            if (amount <= 0) 
-            {
+        } else if (type.equalsIgnoreCase("deposit")) {
+            if (amount <= 0) {
                 System.out.println("Invalid amount: Negative amount");
                 return false;
             } else {
@@ -70,8 +61,7 @@ abstract public class BankAccount implements Transferable {
     }
 
     // Increases the current balance by amount
-    public boolean updateBalance(float amount) 
-    {
+    public boolean updateBalance(float amount) {
         this.balance += amount;
         return true;
     }
@@ -80,50 +70,37 @@ abstract public class BankAccount implements Transferable {
     // Only one thread may use this method at a time
     // Implements withdraw() from Transferable interface
     @Override
-    public boolean withdraw(float amount) 
-    {
-        try 
-        {
+    public boolean withdraw(float amount) {
+        try {
 
             // Timeout to prevent deadlocks
-            if (lock.tryLock(2, TimeUnit.SECONDS)) 
-            {
-                try 
-                {
+            if (lock.tryLock(2, TimeUnit.SECONDS)) {
+                try {
 
                     // Validate if the withdrawal amount is valid
-                    if (validate(amount, "withdraw")) 
-                    {
+                    if (validate(amount, "withdraw")) {
                         // Update the balance by minus
                         updateBalance(-amount);
 
                         // Return withdraw success
                         System.out.println(this.name + " has successfully withdrawn: Current balance = " + this.balance);
                         return true;
-                    } 
-                    else 
-                    {
+                    } else {
                         // Return withdraw failed
                         System.out.println("Withdrawal failed");
                         return false;
                     }
 
-                } 
-                finally 
-                {
+                } finally {
                     lock.unlock();
                 }
 
-            // Lock failed
-            } 
-            else 
-            {
+                // Lock failed
+            } else {
                 System.out.println("Withdraw timeout: Could not acquire lock");
                 return false;
             }
-        } 
-        catch (InterruptedException e) 
-        {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;
         }
@@ -133,29 +110,22 @@ abstract public class BankAccount implements Transferable {
     // Only one thread may use this method at a time
     // Implements deposit() from Transferable interface
     @Override
-    public boolean deposit(float amount) 
-    {
-        try 
-        {
+    public boolean deposit(float amount) {
+        try {
 
             // Timeout to prevent deadlocks
-            if (lock.tryLock(2, TimeUnit.SECONDS)) 
-            {
-                try 
-                {
+            if (lock.tryLock(2, TimeUnit.SECONDS)) {
+                try {
 
                     // Validate if the deposit amount is valid
-                    if (validate(amount, "deposit")) 
-                    {
+                    if (validate(amount, "deposit")) {
                         // Update the balance by increment
                         updateBalance(amount);
 
                         // Return withdraw success
                         System.out.println(this.name + " has successfully deposited: Current balance = " + this.balance);
                         return true;
-                    } 
-                    else 
-                    {
+                    } else {
                         // Return deposit failed
                         System.out.println("Deposit failed");
                         return false;
@@ -165,13 +135,12 @@ abstract public class BankAccount implements Transferable {
                     lock.unlock();
                 }
 
-            // Lock failed
+                // Lock failed
             } else {
                 System.out.println("Deposit timeout: Could not acquire lock");
                 return false;
             }
-        } 
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;
         }
@@ -192,24 +161,18 @@ abstract public class BankAccount implements Transferable {
         BankAccount first = this.hashCode() < destination.hashCode() ? this : destination;
         BankAccount second = this.hashCode() < destination.hashCode() ? destination : this;
 
-        try 
-        {
+        try {
 
             // Timeout to prevent first deadlocks
-            if (first.lock.tryLock(2, TimeUnit.SECONDS)) 
-            {
-                try 
-                {
+            if (first.lock.tryLock(2, TimeUnit.SECONDS)) {
+                try {
 
                     // Timeout to prevent second deadlocks
-                    if (second.lock.tryLock(2, TimeUnit.SECONDS)) 
-                    {
-                        try 
-                        {
+                    if (second.lock.tryLock(2, TimeUnit.SECONDS)) {
+                        try {
 
                             // Attempt to withdraw from this account
-                            if (this.validate(amount, "withdraw")) 
-                            {
+                            if (this.validate(amount, "withdraw")) {
 
                                 // Update balances atomically
                                 this.updateBalance(-amount);
@@ -221,15 +184,11 @@ abstract public class BankAccount implements Transferable {
                             // Withdrawal failed
                             return false;
 
-                        } 
-                        finally 
-                        {
+                        } finally {
                             second.lock.unlock();
                         }
                     }
-                } 
-                finally 
-                {
+                } finally {
                     first.lock.unlock();
                 }
             }
@@ -238,9 +197,7 @@ abstract public class BankAccount implements Transferable {
             System.out.println("Transfer timeout: Could not acquire locks");
             return false;
 
-        } 
-        catch (InterruptedException e) 
-        {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;
         }
@@ -248,14 +205,13 @@ abstract public class BankAccount implements Transferable {
 
     // Override toString() to provide custom useful information on printing BankAccount directly
     @Override
-    public String toString() 
-    {
+    public String toString() {
         // Using StringBuilder optimizes performance
         StringBuilder sb = new StringBuilder();
         sb.append("BankAccount of ")
-            .append(name)
-            .append(": balance = ")
-            .append(balance);
+                .append(name)
+                .append(": balance = ")
+                .append(balance);
         return sb.toString();
     }
 }
